@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
 using ManagedCommon;
-using Microsoft.PowerToys.Settings.UI.Library.Utilities;
 using Wox.Plugin;
 using Helper = Wox.Infrastructure.Helper;
 
@@ -38,7 +39,9 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         private bool Disposed { get; set; }
         
         // todo: setting
-        private static string _basePath = "C:\\.sjas\\dev"; 
+        private static string _basePath = "C:\\.sjas\\dev";
+
+        private Configuration _config = null!;
 
         /// <summary>
         /// Return a filtered list, based on the given query.
@@ -98,45 +101,49 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 
             if (!Path.Exists(path))
             {
-                return
-                [
-                    new Result()
+                return [GetErrorResult("Could not find path")];
+            }
+
+            if (!_config.Options.Any())
+            {
+                return [GetErrorResult("No open options have been set")];
+            }
+            
+            var results = new List<Result>();
+
+            foreach (var option in _config.Options.OrderBy(x => x.Index))
+            {
+                if (option.Type == "process")
+                {
+                    if (string.IsNullOrWhiteSpace(option.ProcessName))
+                    {
+                        return [GetErrorResult("Process name is required")];
+                    }
+
+                    var flags = option.Arguments?.Trim();
+
+                    if (!string.IsNullOrWhiteSpace(flags))
+                    {
+                        flags = flags.Replace("{{PATH}}", path);
+                    }
+                    
+                    results.Add(new Result()
                     {
                         QueryTextDisplay = query.Search,
                         IcoPath = IconPath,
-                        Title = "Cannot find path",
-                        ToolTipData = new ToolTipData("Title", "Text"),
+                        Title = option.Name,
+                        Action = _ =>
+                        {
+                            Helper.OpenInShell(option.ProcessName, flags);
+                            return true;
+                        },
                         ContextData = query.Search,
-                    }
-                ];
-            }
-            
-            return [
-                new Result()
-                {
-                    QueryTextDisplay = query.Search,
-                    IcoPath = IconPath,
-                    Title = "Explorer",
-                    Action = _ =>
-                    {
-                        Helper.OpenInShell("explorer", path);
-                        return true;
-                    },
-                    ContextData = query.Search,
-                },
-                new Result()
-                {
-                    QueryTextDisplay = query.Search,
-                    IcoPath = IconPath,
-                    Title = "VS Code",
-                    Action = _ =>
-                    {
-                        Helper.OpenInShell("code", path);
-                        return true;
-                    },
-                    ContextData = query.Search,
+                        Score = _config.Options.Max(x => x.Index) - option.Index
+                    });
                 }
-            ];
+            }
+
+            return results;
         }
 
         /// <summary>
@@ -148,6 +155,62 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Context.API.ThemeChanged += OnThemeChanged;
             UpdateIconPath(Context.API.GetCurrentTheme());
+
+            var configFile = Path.Combine(_basePath, "power-toys-open-project-config.json");
+
+            if (!File.Exists(configFile))
+            {
+                _config = GetDefaultConfiguration();
+                File.WriteAllText(configFile, JsonSerializer.Serialize(_config, JsonSerializerOptions.Web));
+                return;
+            }
+
+            var fullConfig =
+                JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
+
+            if (fullConfig == null)
+            {
+                Logger.LogError("Failed to deserialize config");
+                throw new Exception("Failed to load config");
+            }
+
+            _config = fullConfig;
+        }
+
+        private Result GetErrorResult(string message)
+        {
+            return new Result()
+            {
+                IcoPath = IconPath,
+                Title = message
+            };
+        }
+
+        private Configuration GetDefaultConfiguration()
+        {
+            return new Configuration()
+            {
+                Options =
+                [
+                    new OpenOption()
+                    {
+                        Type = "process",
+                        Name = "Explorer",
+                        Index = 0,
+                        ProcessName = "explorer",
+                        Arguments = "{{PATH}}"
+                    },
+
+                    new OpenOption()
+                    {
+                        Type = "process",
+                        Name = "VS Code",
+                        Index = 1,
+                        ProcessName = "explorer",
+                        Arguments = "{{PATH}}"
+                    }
+                ]
+            };
         }
 
         /// <summary>
