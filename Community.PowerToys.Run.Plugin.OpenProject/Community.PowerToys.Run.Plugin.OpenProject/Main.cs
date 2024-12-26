@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using ManagedCommon;
@@ -32,6 +34,9 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         private string IconPath { get; set; }
 
         private bool Disposed { get; set; }
+        
+        // todo: setting
+        private static string _basePath = "C:\\.sjas\\dev"; 
 
         /// <summary>
         /// Return a filtered list, based on the given query.
@@ -40,25 +45,60 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         /// <returns>A filtered list, can be empty when nothing was found.</returns>
         public List<Result> Query(Query query)
         {
+            if (string.IsNullOrWhiteSpace(_basePath))
+            {
+                return [new()
+                {
+                    IcoPath = IconPath,
+                    Title = "Please set base path"
+                }];
+            }
+
+            if (query.Search.StartsWith("-o"))
+            {
+                return GenerateProjectOpenResults(query);
+            }
+
+            return GenerateRepositorySearchResults(query);
+        }
+
+        private List<Result> GenerateRepositorySearchResults(Query query)
+        {
             var search = query.Search;
-            
-            return
-            [
-                new Result
+
+            var topLevels = Directory.GetDirectories(_basePath);
+            var results = new List<Result>();
+            foreach (var topLevel in topLevels)
+            {
+                var repoDirs = Directory.GetDirectories(topLevel, $"*{search}*");
+                results.AddRange(repoDirs.Select(x => new Result()
                 {
                     QueryTextDisplay = search,
                     IcoPath = IconPath,
-                    Title = "Title: " + search,
-                    SubTitle = "SubTitle",
-                    ToolTipData = new ToolTipData("Title", "Text"),
+                    Title = new DirectoryInfo(x).Name,
+                    SubTitle = new DirectoryInfo(topLevel).Name,
                     Action = _ =>
                     {
-                        Clipboard.SetDataObject(search);
-                        return true;
+                        Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{x}\"", true);
+                        return false;
                     },
                     ContextData = search,
-                }
-            ];
+                }));
+            }
+
+            return results;
+        }
+
+        private List<Result> GenerateProjectOpenResults(Query query)
+        {
+            return [new Result()
+            {
+                QueryTextDisplay = query.Search,
+                IcoPath = IconPath,
+                Title = "DEBUG - todo open options",
+                ToolTipData = new ToolTipData("Title", "Text"),
+                ContextData = query.Search,
+            }];
         }
 
         /// <summary>
