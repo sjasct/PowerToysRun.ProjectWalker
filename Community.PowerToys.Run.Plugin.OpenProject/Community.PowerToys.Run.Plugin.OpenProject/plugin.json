@@ -1,13 +1,13 @@
 {
   "ID": "2dbbb8424c3e47edb45ae3253fd67b82",
-  "ActionKeyword": "powertoysrun.openproject",
+  "ActionKeyword": "`¬¬`",
   "IsGlobal": false,
-  "Name": "PowerToysRun.OpenProject",
+  "Name": "OpenProject",
   "Author": "sjasct",
   "Version": "0.87.0",
   "Language": "csharp",
   "Website": "https://github.com/sjasct/powertoys-run-open-project",
-  "ExecuteFileName": "PowerToysRun.OpenProject.dll",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.OpenProject.dll",
   "IcoPathDark": "Images\\powertoysrun.openproject.dark.png",
   "IcoPathLight": "Images\\powertoysrun.openproject.light.png",
   "DynamicLoading": false

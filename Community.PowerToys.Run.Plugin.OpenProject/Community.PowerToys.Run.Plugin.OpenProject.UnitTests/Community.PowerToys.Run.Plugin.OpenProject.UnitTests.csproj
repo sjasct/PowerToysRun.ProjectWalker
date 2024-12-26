@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PowerToysRun.OpenProject\PowerToysRun.OpenProject.csproj" />
+        <ProjectReference Include="..\Community.PowerToys.Run.Plugin.OpenProject\Community.PowerToys.Run.Plugin.OpenProject.csproj" />
     </ItemGroup>
 
 </Project>

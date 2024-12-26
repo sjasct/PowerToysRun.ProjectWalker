@@ -5,11 +5,12 @@
         <UseWPF>true</UseWPF>
         <Platforms>x64;ARM64</Platforms>
         <PlatformTarget>$(Platform)</PlatformTarget>
+        <UseWPF>true</UseWPF>
         <RootNamespace>Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject</RootNamespace>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.87.0"/>
+        <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.87.0" />
     </ItemGroup>
 
     <ItemGroup>

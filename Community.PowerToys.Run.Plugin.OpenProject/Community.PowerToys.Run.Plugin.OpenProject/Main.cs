@@ -1,11 +1,11 @@
-using ManagedCommon;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using ManagedCommon;
 using Wox.Plugin;
 
-namespace PowerToysRun.OpenProject
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 {
     /// <summary>
     /// Main class of this plugin that implement all used interfaces.
@@ -20,7 +20,7 @@ namespace PowerToysRun.OpenProject
         /// <summary>
         /// Name of the plugin.
         /// </summary>
-        public string Name => "Open Project";
+        public string Name => "OpenProject";
 
         /// <summary>
         /// Description of the plugin.
@@ -41,7 +41,7 @@ namespace PowerToysRun.OpenProject
         public List<Result> Query(Query query)
         {
             var search = query.Search;
-
+            
             return
             [
                 new Result
