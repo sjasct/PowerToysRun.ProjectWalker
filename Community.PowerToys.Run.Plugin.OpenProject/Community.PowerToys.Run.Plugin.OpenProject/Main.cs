@@ -5,7 +5,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using ManagedCommon;
+using Microsoft.PowerToys.Settings.UI.Library.Utilities;
 using Wox.Plugin;
+using Helper = Wox.Infrastructure.Helper;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 {
@@ -71,15 +73,16 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             foreach (var topLevel in topLevels)
             {
                 var repoDirs = Directory.GetDirectories(topLevel, $"*{search}*");
+                var topDir = new DirectoryInfo(topLevel).Name;
                 results.AddRange(repoDirs.Select(x => new Result()
                 {
                     QueryTextDisplay = search,
                     IcoPath = IconPath,
                     Title = new DirectoryInfo(x).Name,
-                    SubTitle = new DirectoryInfo(topLevel).Name,
+                    SubTitle = topDir,
                     Action = _ =>
                     {
-                        Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{x}\"", true);
+                        Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{topDir}\\{new DirectoryInfo(x).Name}\"", true);
                         return false;
                     },
                     ContextData = search,
@@ -91,14 +94,49 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 
         private List<Result> GenerateProjectOpenResults(Query query)
         {
-            return [new Result()
+            var path = Path.Combine(_basePath, query.Search.Replace("-o", string.Empty).Replace("\"", string.Empty).Trim());
+
+            if (!Path.Exists(path))
             {
-                QueryTextDisplay = query.Search,
-                IcoPath = IconPath,
-                Title = "DEBUG - todo open options",
-                ToolTipData = new ToolTipData("Title", "Text"),
-                ContextData = query.Search,
-            }];
+                return
+                [
+                    new Result()
+                    {
+                        QueryTextDisplay = query.Search,
+                        IcoPath = IconPath,
+                        Title = "Cannot find path",
+                        ToolTipData = new ToolTipData("Title", "Text"),
+                        ContextData = query.Search,
+                    }
+                ];
+            }
+            
+            return [
+                new Result()
+                {
+                    QueryTextDisplay = query.Search,
+                    IcoPath = IconPath,
+                    Title = "Explorer",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell("explorer", path);
+                        return true;
+                    },
+                    ContextData = query.Search,
+                },
+                new Result()
+                {
+                    QueryTextDisplay = query.Search,
+                    IcoPath = IconPath,
+                    Title = "VS Code",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell("code", path);
+                        return true;
+                    },
+                    ContextData = query.Search,
+                }
+            ];
         }
 
         /// <summary>
