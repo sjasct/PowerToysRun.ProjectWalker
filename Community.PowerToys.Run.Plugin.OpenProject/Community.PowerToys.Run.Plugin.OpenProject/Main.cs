@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
@@ -125,6 +126,23 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                     if (!string.IsNullOrWhiteSpace(flags))
                     {
                         flags = flags.Replace("{{PATH}}", path);
+
+                        // this is a very hacky solution, just testing if it works
+                        // todo: if multiple results are found, pawn the user off to a seperate menu to pick which file?? idk
+                        var fileExtMatches = Regex.Matches(flags, "{{FILE:(.+)}}");
+                        if (fileExtMatches.Any())
+                        {
+                            var ext = fileExtMatches.First().Groups[1];
+                            var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
+
+                            if (!fileResults.Any())
+                            {
+                                // couldn't find any files with matching extension, this option cant be used
+                                continue;
+                            }
+
+                            flags = flags.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
+                        }
                     }
                     
                     results.Add(new Result()
@@ -132,6 +150,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         QueryTextDisplay = query.Search,
                         IcoPath = IconPath,
                         Title = option.Name,
+                        SubTitle = $"{option.ProcessName} {flags}",
                         Action = _ =>
                         {
                             Helper.OpenInShell(option.ProcessName, flags);
@@ -200,15 +219,22 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         ProcessName = "explorer",
                         Arguments = "{{PATH}}"
                     },
-
                     new OpenOption()
                     {
                         Type = "process",
                         Name = "VS Code",
                         Index = 1,
-                        ProcessName = "explorer",
+                        ProcessName = "code",
                         Arguments = "{{PATH}}"
-                    }
+                    },
+                    new OpenOption()
+                    {
+                        Type = "process",
+                        Name = "Rider",
+                        Index = 2,
+                        ProcessName = "rider",
+                        Arguments = "{{FILE:*.sln}}"
+                    },
                 ]
             };
         }
