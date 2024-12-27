@@ -2,7 +2,7 @@
 A plugin for [PowerToys Run](https://github.com/microsoft/powertoys) that lets you navigate your local copy of repositories and perform various actions, such as opening in IDE or your browser.
 
 **DISCLAIMER**  
-This was made for my own personal use. It is far from optimised, slightly jankey, and tailored to my specific use case. The project may be expended in the future, for example with new features in the PowerToys Run API, but this should not be classed as a supported project.
+This was made for my own personal use. It is far from optimised, slightly jankey, and tailored to my specific use case. The project may be expanded in the future, for example with new features in the PowerToys Run API, but this should not be classed as a supported project.
 
 If any feature suggestions / bugs are raised, I will get to them when I get time.
 
