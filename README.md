@@ -23,6 +23,13 @@ This will need to be set to the folder path where your repos live.
 `ignoredFolders` - `string[]`  
 A list of folders you don't want including in the results
 
+`folderStructureType` - `int`  
+Defines how your repo folders are structured
+
+*Options:*  
+`0`: Repos are organised into parent project folders e,g, `C:\base\project-name\repo-name`  
+`1`: All repos live directly under the base directory e.g. `C:\base\repo-name`
+
 `customEditorExecutablePath` - `string` *(optional)*  
 Path to an executable to open when the "open config with custom editor" is used. This option will not show if this isn't populated.
 

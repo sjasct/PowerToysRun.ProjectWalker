@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using Windows.UI.Core;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using FuzzySharp;
 using ManagedCommon;
 using Wox.Infrastructure;
@@ -66,7 +67,11 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 return GenerateConfigManagementResults(query);
             }
 
-            return GenerateRepositorySearchResults(query);
+            return ConfigHelper.Instance.Config.FolderStructureType switch
+            {
+                FolderStructureType.ProjectParents => GenerateProjectParentSearchResults(query),
+                FolderStructureType.StandaloneRepos => GenerateStandaloneRepoSearchResults(query)
+            };
         }
 
         private List<Result> GenerateConfigManagementResults(Query query)
@@ -127,8 +132,40 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
 
             return results;
         }
+        
+        private List<Result> GenerateStandaloneRepoSearchResults(Query query)
+        {
+            var search = query.Search;
 
-        private List<Result> GenerateRepositorySearchResults(Query query)
+            var repos = Directory.GetDirectories(ConfigHelper.Instance.Config.BasePath);
+            var folders = new List<string>();
+            
+            foreach (var repo in repos)
+            {
+                var repoName = new DirectoryInfo(repo).Name;
+                if (ConfigHelper.Instance.Config.IgnoredFolders.Contains(repoName))
+                {
+                    continue;
+                }
+                
+                folders.Add(repoName);
+            }
+
+            var folderResults = folders.Where(repoName => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio(repoName, search) > 75);
+            return folderResults.Select(repoName => new Result()
+            {
+                QueryTextDisplay = search,
+                Title = repoName,
+                Action = _ =>
+                {
+                    Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{repoName}\"", true);
+                    return false;
+                },
+                ContextData = search,
+            }).ToList();
+        }
+
+        private List<Result> GenerateProjectParentSearchResults(Query query)
         {
             var search = query.Search;
 
