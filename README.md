@@ -16,8 +16,17 @@ If any feature suggestions / bugs are raised, I will get to them when I get time
 ### Configuration
 On first launch, a config file will be created at `%APPDATA%/ProjectWalker/config.json` with some default options. You can reload and open the config file in Notepad / VS Code by starting your search with `-c`.
 
-The `basePath` will need to be set to the folder path where your repos live.  
+`basePath` - `string`  
+This will need to be set to the folder path where your repos live.  
 *e.g. if a sample repo path is `C:\dev\project-name\repo-name`, then `basePath` should equal `C:\dev`*
+
+`ignoredFolders` - `string[]`  
+A list of folders you don't want including in the results
+
+`customEditorExecutablePath` - `string` *(optional)*  
+Path to an executable to open when the "open config with custom editor" is used. This option will not show if this isn't populated.
+
+`openOptions` - `openOptions[]` *see below*
 
 ### Open Options  
 These are the set of options you receieve when selecting a project. 
