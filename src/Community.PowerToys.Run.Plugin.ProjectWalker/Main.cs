@@ -137,10 +137,22 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
             
             foreach (var topLevel in topLevels)
             {
+                var topLevelName = new DirectoryInfo(topLevel).Name;
+                if (ConfigHelper.Instance.Config.IgnoredFolders.Contains(topLevelName))
+                {
+                    continue;
+                }
+                
                 var repoDirs = Directory.GetDirectories(topLevel);
                 foreach (var repoDir in repoDirs)
                 {
-                    folders.Add(new Folder(new DirectoryInfo(topLevel).Name, new DirectoryInfo(repoDir).Name));
+                    var repoName = new DirectoryInfo(repoDir).Name;
+                    if (ConfigHelper.Instance.Config.IgnoredFolders.Contains(repoName))
+                    {
+                        continue;
+                    }
+                    
+                    folders.Add(new Folder(topLevelName, repoName));
                 }
             }
 

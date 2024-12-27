@@ -6,5 +6,6 @@ public class PluginConfig
 {
     public string BasePath { get; set; } = string.Empty;
     public string? CustomEditorExecutablePath { get; set; }
+    public List<string> IgnoredFolders { get; set; } = []; 
     public List<OpenOption> Options { get; set; } = [];
 }
