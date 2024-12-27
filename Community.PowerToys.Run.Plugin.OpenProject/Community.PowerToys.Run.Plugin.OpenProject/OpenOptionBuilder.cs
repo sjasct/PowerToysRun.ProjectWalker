@@ -10,7 +10,7 @@ using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject;
 
-public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
+public class OpenOptionBuilder()
 {
     public Result? BuildProcessResult(OpenOption option, Query query, string path)
     {
@@ -33,8 +33,8 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
         return new Result()
         {
             QueryTextDisplay = query.Search,
-            IcoPath = coreIconPath,
             Title = option.Name,
+            IcoPath = ConfigHelper.Instance.GetProcessIconPath(option.ProcessName),
             SubTitle = $"{option.ProcessName} {flags}",
             Action = _ =>
             {
@@ -42,7 +42,7 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
                 return true;
             },
             ContextData = query.Search,
-            Score = config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
     }
 
@@ -68,7 +68,7 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
         return new Result()
         {
             QueryTextDisplay = query.Search,
-            IcoPath = coreIconPath,
+            IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
             Title = option.Name,
             SubTitle = destination,
             Action = _ =>
@@ -77,7 +77,7 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
                 return true;
             },
             ContextData = query.Search,
-            Score = config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
     }
 
@@ -98,7 +98,7 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
         return new Result()
         {
             QueryTextDisplay = query.Search,
-            IcoPath = coreIconPath,
+            IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
             Title = option.Name,
             SubTitle = text,
             Action = _ =>
@@ -107,7 +107,7 @@ public class OpenOptionBuilder(string coreIconPath, PluginConfig config)
                 return true;
             },
             ContextData = query.Search,
-            Score = config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
     }
 

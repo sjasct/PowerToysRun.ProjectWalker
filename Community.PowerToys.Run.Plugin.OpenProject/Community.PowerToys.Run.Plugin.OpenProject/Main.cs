@@ -35,16 +35,9 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         public string Description => "PowerToysRun.OpenProject Description";
 
         private PluginInitContext Context { get; set; }
-
-        private string IconPath { get; set; }
-
+        
         private bool Disposed { get; set; }
         
-        // todo: setting
-        private static string _basePath = "C:\\.sjas\\dev";
-
-        private PluginConfig _config = null!;
-
         /// <summary>
         /// Return a filtered list, based on the given query.
         /// </summary>
@@ -52,11 +45,11 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         /// <returns>A filtered list, can be empty when nothing was found.</returns>
         public List<Result> Query(Query query)
         {
-            if (string.IsNullOrWhiteSpace(_basePath))
+            if (string.IsNullOrWhiteSpace(ConfigHelper.Instance.Config.BasePath))
             {
                 return [new()
                 {
-                    IcoPath = IconPath,
+                    IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
                     Title = "Please set base path"
                 }];
             }
@@ -73,7 +66,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         {
             var search = query.Search;
 
-            var topLevels = Directory.GetDirectories(_basePath);
+            var topLevels = Directory.GetDirectories(ConfigHelper.Instance.Config.BasePath);
             var results = new List<Result>();
             foreach (var topLevel in topLevels)
             {
@@ -82,7 +75,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                 results.AddRange(repoDirs.Select(x => new Result()
                 {
                     QueryTextDisplay = search,
-                    IcoPath = IconPath,
+                    IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
                     Title = new DirectoryInfo(x).Name,
                     SubTitle = topDir,
                     Action = _ =>
@@ -99,22 +92,22 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 
         private List<Result> GenerateProjectOpenResults(Query query)
         {
-            var path = Path.Combine(_basePath, query.Search.Replace("-o", string.Empty).Replace("\"", string.Empty).Trim());
+            var path = Path.Combine(ConfigHelper.Instance.Config.BasePath, query.Search.Replace("-o", string.Empty).Replace("\"", string.Empty).Trim());
 
             if (!Path.Exists(path))
             {
                 return [GetErrorResult("Could not find path")];
             }
 
-            if (!_config.Options.Any())
+            if (!ConfigHelper.Instance.Config.Options.Any())
             {
                 return [GetErrorResult("No open options have been set")];
             }
             
             var results = new List<Result>();
-            var builder = new OpenOptionBuilder(IconPath, _config);
+            var builder = new OpenOptionBuilder();
 
-            foreach (var option in _config.Options.OrderBy(x => x.Index))
+            foreach (var option in ConfigHelper.Instance.Config.Options.OrderBy(x => x.Index))
             {
                 var result = option.Type switch
                 {
@@ -141,83 +134,16 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Context.API.ThemeChanged += OnThemeChanged;
-            UpdateIconPath(Context.API.GetCurrentTheme());
-
-            var configFile = Path.Combine(_basePath, "power-toys-open-project-config.json");
-
-            if (!File.Exists(configFile))
-            {
-                _config = GetDefaultConfiguration();
-                File.WriteAllText(configFile, JsonSerializer.Serialize(_config, JsonSerializerOptions.Web));
-                return;
-            }
-
-            var fullConfig =
-                JsonSerializer.Deserialize<PluginConfig>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
-
-            if (fullConfig == null)
-            {
-                Logger.LogError("Failed to deserialize config");
-                throw new Exception("Failed to load config");
-            }
-
-            _config = fullConfig;
+            ConfigHelper.Instance.SetTheme(Context.API.GetCurrentTheme());
+            ConfigHelper.Instance.LoadConfig();
         }
 
         private Result GetErrorResult(string message)
         {
             return new Result()
             {
-                IcoPath = IconPath,
+                IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
                 Title = message
-            };
-        }
-
-        private PluginConfig GetDefaultConfiguration()
-        {
-            return new PluginConfig()
-            {
-                Options =
-                [
-                    new OpenOption()
-                    {
-                        Type = "process",
-                        Name = "Explorer",
-                        Index = 0,
-                        ProcessName = "explorer",
-                        Parameters = "{{PATH}}"
-                    },
-                    new OpenOption()
-                    {
-                        Type = "process",
-                        Name = "VS Code",
-                        Index = 1,
-                        ProcessName = "code",
-                        Parameters = "{{PATH}}"
-                    },
-                    new OpenOption()
-                    {
-                        Type = "process",
-                        Name = "Rider",
-                        Index = 2,
-                        ProcessName = "rider",
-                        Parameters = "{{FILE:*.sln}}"
-                    },
-                    new OpenOption()
-                    {
-                        Type = "browser",
-                        Name = "Open in Browser",
-                        Index = 3,
-                        Parameters = "{{GIT:REMOTE_URL}}"
-                    },
-                    new OpenOption()
-                    {
-                        Type = "clipboard",
-                        Name = "Copy path",
-                        Index = 4,
-                        Parameters = "{{PATH}}"
-                    },
-                ]
             };
         }
 
@@ -277,11 +203,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 
             Disposed = true;
         }
-
-        private void UpdateIconPath(Theme theme) => IconPath = theme == Theme.Light || theme == Theme.HighContrastWhite
-            ? "Images/powertoysrun.openproject.light.png"
-            : "Images/powertoysrun.openproject.dark.png";
-
-        private void OnThemeChanged(Theme currentTheme, Theme newTheme) => UpdateIconPath(newTheme);
+        
+        private void OnThemeChanged(Theme currentTheme, Theme newTheme) => ConfigHelper.Instance.SetTheme(newTheme);
     }
 }
