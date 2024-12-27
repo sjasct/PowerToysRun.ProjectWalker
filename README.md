@@ -13,6 +13,15 @@ If any feature suggestions / bugs are raised, I will get to them when I get time
 4. Extract the zip, so that the `ProjectWalker` folder is under `Plugins`
 5. Relaunch PowerToys
 
+
+### Screenshots
+
+**Project Results**  
+![A PowerToys Run result list showing a list of projects](screenshots/project-list.png)
+
+**Open Options**  
+![A PowerToys Run result list a list of options for how to open a project](screenshots/option-list.png)
+
 ### Configuration
 On first launch, a config file will be created at `%APPDATA%/ProjectWalker/config.json` with some default options. You can reload and open the config file in Notepad / VS Code by starting your search with `-c`.
 
