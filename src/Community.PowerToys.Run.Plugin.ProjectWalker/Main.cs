@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using FuzzySharp;
 using ManagedCommon;
+using Wox.Infrastructure;
 using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
@@ -43,19 +44,78 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         {
             if (string.IsNullOrWhiteSpace(ConfigHelper.Instance.Config.BasePath))
             {
-                return [new()
+                var results = GenerateConfigManagementResults(query);
+                results.Add(new()
                 {
-                    IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
-                    Title = "Please set base path"
-                }];
+                    Title = "Please set base path in config.json",
+                    Score = 9999
+                });
+
+                return results;
             }
 
-            if (query.Search.StartsWith("-o"))
+            if (query.Search.ToLower().StartsWith("-o"))
             {
                 return GenerateProjectOpenResults(query);
             }
 
+            if (query.Search.ToLower().StartsWith("-c"))
+            {
+                return GenerateConfigManagementResults(query);
+            }
+
             return GenerateRepositorySearchResults(query);
+        }
+
+        private List<Result> GenerateConfigManagementResults(Query query)
+        {
+            return
+            [
+                new Result()
+                {
+                    Title = "Edit Config in Notepad",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell("notepad", ConfigHelper.Instance.GetConfigFilePath());
+                        Context.API.ChangeQuery("", true);
+                        return true;
+                    },
+                    Score = 900
+                },
+                new Result()
+                {
+                    Title = "Edit Config in VS Code",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell("code", ConfigHelper.Instance.GetConfigFilePath());
+                        Context.API.ChangeQuery("", true);
+                        return true;
+                    },
+                    Score = 800
+                },
+                new Result()
+                {
+                    Title = "Reload Config",
+                    Action = _ =>
+                    {
+                        ConfigHelper.Instance.LoadConfig();
+                        Context.API.ChangeQuery($"{query.ActionKeyword}", true);
+                        return false;
+                    },
+                    Score = 700
+                },
+                new Result()
+                {
+                    Title = "View ProjectWalker GitHub repository",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell(Context.CurrentPluginMetadata.Website);
+                        Context.API.ChangeQuery("", true);
+                        return true;
+                    },
+                    Score = 600
+                }
+            ];
         }
 
         private List<Result> GenerateRepositorySearchResults(Query query)
@@ -78,7 +138,6 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
             return folderResults.Select(x => new Result()
             {
                 QueryTextDisplay = search,
-                IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
                 Title = x.RepoFolderName,
                 SubTitle = x.ProjectFolderName,
                 Action = _ =>
@@ -89,9 +148,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 ContextData = search,
             }).ToList();
         }
-
-        private record Folder(string ProjectFolderName, string RepoFolderName);
-
+        
         private List<Result> GenerateProjectOpenResults(Query query)
         {
             var path = Path.Combine(ConfigHelper.Instance.Config.BasePath, query.Search.Replace("-o", string.Empty).Replace("\"", string.Empty).Trim());
@@ -148,6 +205,8 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 Title = message
             };
         }
+        
+        private record Folder(string ProjectFolderName, string RepoFolderName);
 
         /// <summary>
         /// Return a list context menu entries for a given <see cref="Result"/> (shown at the right side of the result).

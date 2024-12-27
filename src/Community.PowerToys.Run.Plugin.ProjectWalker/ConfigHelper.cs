@@ -22,9 +22,7 @@ public class ConfigHelper
 
     public void LoadConfig()
     {
-        var configDir = GetAndCreateBaseSettingsPath();
-        var configFile = Path.Combine(configDir, "config.json");
-
+        var configFile = GetConfigFilePath();
         if (!File.Exists(configFile))
         {
             File.WriteAllText(configFile, JsonSerializer.Serialize(Config, JsonSerializerOptions.Web));
@@ -81,6 +79,11 @@ public class ConfigHelper
         : "Images/powertoysrun.projectwalker.dark.png";
     }
     
+    public string GetConfigFilePath()
+    {
+        return Path.Combine(GetAndCreateBaseSettingsPath(), "config.json");
+    }
+    
     private static PluginConfig GetDefaultConfiguration()
     {
         return new PluginConfig()
@@ -120,7 +123,7 @@ public class ConfigHelper
             ]
         };
     }
-
+    
     private static string GetAndCreateBaseSettingsPath(string? subfolder = null)
     {
         var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ProjectWalker", subfolder ?? string.Empty);
