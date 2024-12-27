@@ -66,6 +66,7 @@ These are the set of options you receieve when selecting a project.
 
 **Supported Variables**  
 - `{{PATH}}` - The full path to the repo folder
+- `{{FOLDER}}` - The currently selected folder name
 - `{{GIT:REMOTE_URL}}` - The remote URL for the Git repo
 - `{{FILE:x}}` - Find 1st file with a specific filter (replacing `x`) e.g. `{{FILE:*.sln}}` will find the 1st .sln file. 
 

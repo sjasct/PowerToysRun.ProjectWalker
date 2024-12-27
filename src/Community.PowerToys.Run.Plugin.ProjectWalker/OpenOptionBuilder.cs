@@ -115,6 +115,7 @@ public class OpenOptionBuilder()
     {
         var searchText = original;
         searchText = searchText.Replace("{{PATH}}", path);
+        searchText = searchText.Replace("{{FOLDER}}", new DirectoryInfo(path).Name);
 
         searchText = ReplaceFileSearch(searchText, path);
         if (searchText == null)
