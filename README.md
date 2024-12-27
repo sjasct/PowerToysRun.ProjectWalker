@@ -87,7 +87,8 @@ These are the set of options you receieve when selecting a project.
 - `{{PATH}}` - The full path to the repo folder
 - `{{FOLDER}}` - The currently selected folder name
 - `{{GIT:REMOTE_URL}}` - The remote URL for the Git repo
-- `{{FILE:x}}` - Find 1st file with a specific filter (replacing `x`) e.g. `{{FILE:*.sln}}` will find the 1st .sln file. 
+- `{{FILE:x}}` - Find 1st file with a specific filter (replacing `x`) in the top level folder e.g. `{{FILE:*.sln}}` will find the 1st .sln file. 
+- `{{RECURSIVE_FILE:X}}` - Same as `{{FILE:x}}` except all subfolders are searched, instead of just the top-level folder. 
 
 If a variable is used in an option, but cannot be applied (e.g. not a git repo, no suitable file found) the option will not show.
 
