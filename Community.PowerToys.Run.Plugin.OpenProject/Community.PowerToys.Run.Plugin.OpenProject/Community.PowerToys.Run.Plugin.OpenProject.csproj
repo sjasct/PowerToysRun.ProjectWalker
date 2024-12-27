@@ -11,9 +11,7 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.87.0">
-            <PrivateAssets>true</PrivateAssets>
-        </PackageReference>
+        <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.87.1" PrivateAssets="All" />
         <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
     </ItemGroup>
 

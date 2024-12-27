@@ -10,7 +10,6 @@ using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
 using LibGit2Sharp;
 using ManagedCommon;
 using Wox.Plugin;
-using Configuration = Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models.Configuration;
 using Helper = Wox.Infrastructure.Helper;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
@@ -44,7 +43,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         // todo: setting
         private static string _basePath = "C:\\.sjas\\dev";
 
-        private Configuration _config = null!;
+        private PluginConfig _config = null!;
 
         /// <summary>
         /// Return a filtered list, based on the given query.
@@ -113,79 +112,21 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             }
             
             var results = new List<Result>();
+            var builder = new OpenOptionBuilder(IconPath, _config);
 
             foreach (var option in _config.Options.OrderBy(x => x.Index))
             {
-                if (option.Type == "process")
+                var result = option.Type switch
                 {
-                    if (string.IsNullOrWhiteSpace(option.ProcessName))
-                    {
-                        return [GetErrorResult("Process name is required")];
-                    }
+                    "process" => builder.BuildProcessResult(option, query, path),
+                    "browser" => builder.BuildBrowserResult(option, query, path),
+                    "clipboard" => builder.BuildClipboardResult(option, query, path),
+                    _ => null
+                };
 
-                    var flags = option.Arguments?.Trim();
-
-                    if (!string.IsNullOrWhiteSpace(flags))
-                    {
-                        flags = flags.Replace("{{PATH}}", path);
-
-                        // FILE MATCHES
-                        // this is a very hacky solution, just testing if it works
-                        // todo: if multiple results are found, pawn the user off to a seperate menu to pick which file?? idk
-                        var fileExtMatches = Regex.Matches(flags, "{{FILE:(.+)}}");
-                        if (fileExtMatches.Any())
-                        {
-                            var ext = fileExtMatches.First().Groups[1];
-                            var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
-
-                            if (fileResults.Any())
-                            {
-                                flags = flags.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-                        
-                        // GIT
-                        // this is also a hack
-                        var gitMatches = Regex.Matches(flags, "{{GIT:(.+)}}");
-                        if (gitMatches.Any())
-                        {
-                            if (Repository.IsValid(path))
-                            {
-                                using var gitRepo = new Repository(path);
-                                foreach (var gitMatch in gitMatches.DistinctBy(x => x.Groups[1].Value))
-                                {
-                                    var gitMatchKey = gitMatch.Groups[1].Value;
-                                    if (gitMatchKey == "REMOTE_URL" && gitRepo.Network.Remotes.Any())
-                                    {
-                                        flags = flags.Replace(gitMatch.Value, gitRepo.Network.Remotes.First().Url);
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    results.Add(new Result()
-                    {
-                        QueryTextDisplay = query.Search,
-                        IcoPath = IconPath,
-                        Title = option.Name,
-                        SubTitle = $"{option.ProcessName} {flags}",
-                        Action = _ =>
-                        {
-                            Helper.OpenInShell(option.ProcessName, flags);
-                            return true;
-                        },
-                        ContextData = query.Search,
-                        Score = _config.Options.Max(x => x.Index) - option.Index
-                    });
+                if (result != null)
+                {
+                    results.Add(result);
                 }
             }
 
@@ -212,7 +153,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             }
 
             var fullConfig =
-                JsonSerializer.Deserialize<Configuration>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
+                JsonSerializer.Deserialize<PluginConfig>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
 
             if (fullConfig == null)
             {
@@ -232,9 +173,9 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             };
         }
 
-        private Configuration GetDefaultConfiguration()
+        private PluginConfig GetDefaultConfiguration()
         {
-            return new Configuration()
+            return new PluginConfig()
             {
                 Options =
                 [
