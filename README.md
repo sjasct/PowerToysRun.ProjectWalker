@@ -11,7 +11,7 @@ If any feature suggestions / bugs are raised, I will get to them when I get time
 2. Download latest .zip from the releases page
 3. Drop the downloaded zip in `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`
 4. Extract the zip, so that the `ProjectWalker` folder is under `Plugins`
-4. Relaunch PowerToys
+5. Relaunch PowerToys
 
 ### Configuration
 On first launch, a config file will be created at `%APPDATA%/ProjectWalker/config.json` with some default options. You can reload and open the config file in Notepad / VS Code by starting your search with `-c`.
