@@ -10,5 +10,5 @@
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.OpenProject.dll",
   "IcoPathDark": "Images\\powertoysrun.openproject.dark.png",
   "IcoPathLight": "Images\\powertoysrun.openproject.light.png",
-  "DynamicLoading": false
+  "DynamicLoading": true
 }

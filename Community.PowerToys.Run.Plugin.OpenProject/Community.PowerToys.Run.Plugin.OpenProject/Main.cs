@@ -7,8 +7,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
+using LibGit2Sharp;
 using ManagedCommon;
 using Wox.Plugin;
+using Configuration = Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models.Configuration;
 using Helper = Wox.Infrastructure.Helper;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
@@ -127,6 +129,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                     {
                         flags = flags.Replace("{{PATH}}", path);
 
+                        // FILE MATCHES
                         // this is a very hacky solution, just testing if it works
                         // todo: if multiple results are found, pawn the user off to a seperate menu to pick which file?? idk
                         var fileExtMatches = Regex.Matches(flags, "{{FILE:(.+)}}");
@@ -135,13 +138,37 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                             var ext = fileExtMatches.First().Groups[1];
                             var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
 
-                            if (!fileResults.Any())
+                            if (fileResults.Any())
                             {
-                                // couldn't find any files with matching extension, this option cant be used
+                                flags = flags.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
+                            }
+                            else
+                            {
                                 continue;
                             }
-
-                            flags = flags.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
+                        }
+                        
+                        // GIT
+                        // this is also a hack
+                        var gitMatches = Regex.Matches(flags, "{{GIT:(.+)}}");
+                        if (gitMatches.Any())
+                        {
+                            if (Repository.IsValid(path))
+                            {
+                                using var gitRepo = new Repository(path);
+                                foreach (var gitMatch in gitMatches.DistinctBy(x => x.Groups[1].Value))
+                                {
+                                    var gitMatchKey = gitMatch.Groups[1].Value;
+                                    if (gitMatchKey == "REMOTE_URL" && gitRepo.Network.Remotes.Any())
+                                    {
+                                        flags = flags.Replace(gitMatch.Value, gitRepo.Network.Remotes.First().Url);
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                            }
                         }
                     }
                     
