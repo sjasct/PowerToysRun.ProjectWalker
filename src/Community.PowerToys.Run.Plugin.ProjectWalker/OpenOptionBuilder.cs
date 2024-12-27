@@ -22,7 +22,7 @@ public class OpenOptionBuilder()
         var flags = option.Parameters?.Trim();
         if (!string.IsNullOrWhiteSpace(flags))
         {
-            flags = Replace(flags, path);
+            flags = ReplaceVariables(flags, path);
 
             if (string.IsNullOrWhiteSpace(flags))
             {
@@ -54,7 +54,7 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        destination = Replace(destination, path);
+        destination = ReplaceVariables(destination, path);
         if (string.IsNullOrWhiteSpace(destination))
         {
             return null;
@@ -89,7 +89,7 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        text = Replace(text, path);
+        text = ReplaceVariables(text, path);
         if (string.IsNullOrWhiteSpace(text))
         {
             return null;
@@ -111,13 +111,19 @@ public class OpenOptionBuilder()
         };
     }
 
-    private string? Replace(string original, string path)
+    private string? ReplaceVariables(string original, string path)
     {
         var searchText = original;
         searchText = searchText.Replace("{{PATH}}", path);
         searchText = searchText.Replace("{{FOLDER}}", new DirectoryInfo(path).Name);
 
         searchText = ReplaceFileSearch(searchText, path);
+        if (searchText == null)
+        {
+            return null;
+        }
+
+        searchText = ReplaceRecursiveFileSearch(searchText, path);
         if (searchText == null)
         {
             return null;
@@ -142,6 +148,25 @@ public class OpenOptionBuilder()
 
         var ext = fileExtMatches.First().Groups[1];
         var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
+
+        if (fileResults.Any())
+        {
+            return searchText.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
+        }
+            
+        return null;
+    }
+
+    private string? ReplaceRecursiveFileSearch(string searchText, string path)
+    {
+        var fileExtMatches = Regex.Matches(searchText, "{{RECURSIVE_FILE:(.+)}}");
+        if (!fileExtMatches.Any())
+        {
+            return searchText;
+        }
+
+        var ext = fileExtMatches.First().Groups[1];
+        var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}", SearchOption.AllDirectories);
 
         if (fileResults.Any())
         {
