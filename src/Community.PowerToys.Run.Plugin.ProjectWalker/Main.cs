@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Windows.UI.Core;
 using FuzzySharp;
 using ManagedCommon;
 using Wox.Infrastructure;
@@ -155,7 +156,21 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
 
             if (!Path.Exists(path))
             {
-                return [GetErrorResult("Could not find path")];
+                return
+                [
+                    new Result()
+                    {
+                        IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
+                        Title = "Could not find path to folder",
+                        SubTitle = path,
+                        Action = _ =>
+                        {
+                            Clipboard.SetText(path);
+                            Context.API.ChangeQuery("", true);
+                            return true;
+                        }
+                    }
+                ];
             }
 
             if (!ConfigHelper.Instance.Config.Options.Any())
@@ -197,12 +212,13 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
             ConfigHelper.Instance.LoadConfig();
         }
 
-        private Result GetErrorResult(string message)
+        private Result GetErrorResult(string message, string? subtitle = null)
         {
             return new Result()
             {
                 IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
-                Title = message
+                Title = message,
+                SubTitle = subtitle
             };
         }
         
