@@ -151,7 +151,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 folders.Add(repoName);
             }
 
-            var folderResults = folders.Where(repoName => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio(repoName, search) > 75);
+            var folderResults = folders.Where(repoName => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio(repoName, search) > ConfigHelper.Instance.Config.SearchMatchRatio);
             return folderResults.Select(repoName => new Result()
             {
                 QueryTextDisplay = search,
@@ -193,7 +193,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 }
             }
 
-            var folderResults = folders.Where(x => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio($"{x.ProjectFolderName}/{x.RepoFolderName}", search) > 75);
+            var folderResults = folders.Where(x => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio($"{x.ProjectFolderName}/{x.RepoFolderName}", search) > ConfigHelper.Instance.Config.SearchMatchRatio);
             return folderResults.Select(x => new Result()
             {
                 QueryTextDisplay = search,

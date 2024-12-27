@@ -27,11 +27,14 @@ A list of folders you don't want including in the results
 Defines how your repo folders are structured
 
 *Options:*  
-`0`: Repos are organised into parent project folders e,g, `C:\base\project-name\repo-name`  
+`0`: Repos are organised into parent project folders e,g, `C:\base\project-name\repo-name`  (default)  
 `1`: All repos live directly under the base directory e.g. `C:\base\repo-name`
 
 `customEditorExecutablePath` - `string` *(optional)*  
 Path to an executable to open when the "open config with custom editor" is used. This option will not show if this isn't populated.
+
+`searchMatchRatio` - `int`  
+Ratio (between 1-100) needed to match folders according to the search term, based on fuzzy search. The higher the number, the closer the more accurate the results, the lower the looser the requirements for a match. Default is 70.
 
 `openOptions` - `openOptions[]` *see below*
 
