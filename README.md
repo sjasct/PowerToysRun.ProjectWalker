@@ -10,6 +10,7 @@ If any feature suggestions / bugs are raised, I will get to them when I get time
 1. Stop PowerToys
 2. Download latest .zip from the releases page
 3. Drop the downloaded zip in `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`
+4. Extract the zip, so that the `ProjectWalker` folder is under `Plugins`
 4. Relaunch PowerToys
 
 ### Configuration
@@ -60,3 +61,9 @@ These are the set of options you receieve when selecting a project.
 - `{{FILE:x}}` - Find 1st file with a specific filter (replacing `x`) e.g. `{{FILE:*.sln}}` will find the 1st .sln file. 
 
 If a variable is used in an option, but cannot be applied (e.g. not a git repo, no suitable file found) the option will not show.
+
+#### Libraries Used
+
+- [FuzzySharp](https://github.com/JakeBayer/FuzzySharp)
+- [libgit2sharp](https://github.com/libgit2/libgit2sharp)
+- [Community.PowerToys.Run.Plugin.Dependencies](https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Dependencies) (build only)
