@@ -203,6 +203,13 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         ProcessName = "rider",
                         Arguments = "{{FILE:*.sln}}"
                     },
+                    new OpenOption()
+                    {
+                        Type = "browser",
+                        Name = "Open in Browser",
+                        Index = 2,
+                        Destination = "{{GIT:REMOTE_URL}}"
+                    },
                 ]
             };
         }
