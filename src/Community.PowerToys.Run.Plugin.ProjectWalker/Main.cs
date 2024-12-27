@@ -70,11 +70,11 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
 
         private List<Result> GenerateConfigManagementResults(Query query)
         {
-            return
-            [
+            List<Result> results = [
                 new Result()
                 {
                     Title = "Edit Config in Notepad",
+                    SubTitle = ConfigHelper.Instance.GetConfigFilePath(),
                     Action = _ =>
                     {
                         Helper.OpenInShell("notepad", ConfigHelper.Instance.GetConfigFilePath());
@@ -85,18 +85,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 },
                 new Result()
                 {
-                    Title = "Edit Config in VS Code",
-                    Action = _ =>
-                    {
-                        Helper.OpenInShell("code", ConfigHelper.Instance.GetConfigFilePath());
-                        Context.API.ChangeQuery("", true);
-                        return true;
-                    },
-                    Score = 800
-                },
-                new Result()
-                {
-                    Title = "Reload Config",
+                    Title = "Reload config",
                     Action = _ =>
                     {
                         ConfigHelper.Instance.LoadConfig();
@@ -108,6 +97,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 new Result()
                 {
                     Title = "View ProjectWalker GitHub repository",
+                    SubTitle = Context.CurrentPluginMetadata.Website,
                     Action = _ =>
                     {
                         Helper.OpenInShell(Context.CurrentPluginMetadata.Website);
@@ -117,6 +107,24 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                     Score = 600
                 }
             ];
+
+            if (!string.IsNullOrWhiteSpace(ConfigHelper.Instance.Config.CustomEditorExecutablePath))
+            {
+                results.Add(new Result()
+                {
+                    Title = "Edit config in custom editor",
+                    SubTitle = $"{ConfigHelper.Instance.Config.CustomEditorExecutablePath} {ConfigHelper.Instance.GetConfigFilePath()}",
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell(ConfigHelper.Instance.Config.CustomEditorExecutablePath, ConfigHelper.Instance.GetConfigFilePath());
+                        Context.API.ChangeQuery("", true);
+                        return true;
+                    },
+                    Score = 800
+                });
+            }
+
+            return results;
         }
 
         private List<Result> GenerateRepositorySearchResults(Query query)
