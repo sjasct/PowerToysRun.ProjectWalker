@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using Windows.UI.Core;
@@ -160,7 +161,8 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         
         private List<Result> GenerateProjectOpenResults(Query query)
         {
-            var path = Path.Combine(ConfigHelper.Instance.Config.BasePath, query.Search.Replace("-o", string.Empty).Replace("\"", string.Empty).Trim());
+            var regex = new Regex(Regex.Escape("-o"));
+            var path = Path.Combine(ConfigHelper.Instance.Config.BasePath, regex.Replace(query.Search, string.Empty, 1).Replace("\"", string.Empty).Trim());
 
             if (!Path.Exists(path))
             {
