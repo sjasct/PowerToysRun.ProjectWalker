@@ -6,7 +6,7 @@
   "Author": "sjasct",
   "Version": "0.87.0",
   "Language": "csharp",
-  "Website": "https://github.com/sjasct/powertoys-run-open-project",
+  "Website": "https://github.com/sjasct/PowerToysRun.ProjectWalker",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.ProjectWalker.dll",
   "IcoPathDark": "Images\\powertoysrun.projectwalker.dark.png",
   "IcoPathLight": "Images\\powertoysrun.projectwalker.light.png",
