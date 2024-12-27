@@ -185,7 +185,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         Name = "Explorer",
                         Index = 0,
                         ProcessName = "explorer",
-                        Arguments = "{{PATH}}"
+                        Parameters = "{{PATH}}"
                     },
                     new OpenOption()
                     {
@@ -193,7 +193,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         Name = "VS Code",
                         Index = 1,
                         ProcessName = "code",
-                        Arguments = "{{PATH}}"
+                        Parameters = "{{PATH}}"
                     },
                     new OpenOption()
                     {
@@ -201,14 +201,21 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
                         Name = "Rider",
                         Index = 2,
                         ProcessName = "rider",
-                        Arguments = "{{FILE:*.sln}}"
+                        Parameters = "{{FILE:*.sln}}"
                     },
                     new OpenOption()
                     {
                         Type = "browser",
                         Name = "Open in Browser",
-                        Index = 2,
-                        Destination = "{{GIT:REMOTE_URL}}"
+                        Index = 3,
+                        Parameters = "{{GIT:REMOTE_URL}}"
+                    },
+                    new OpenOption()
+                    {
+                        Type = "clipboard",
+                        Name = "Copy path",
+                        Index = 4,
+                        Parameters = "{{PATH}}"
                     },
                 ]
             };
