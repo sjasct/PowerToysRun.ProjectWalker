@@ -1,4 +1,4 @@
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 
 public class OpenOption
 {

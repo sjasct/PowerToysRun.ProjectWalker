@@ -1,9 +1,10 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.UnitTests
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.UnitTests
 {
+    // todo
     [TestClass]
     public class MainTests
     {

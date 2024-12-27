@@ -6,7 +6,7 @@
         <Platforms>x64;ARM64</Platforms>
         <PlatformTarget>$(Platform)</PlatformTarget>
         <UseWPF>true</UseWPF>
-        <RootNamespace>Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject</RootNamespace>
+        <RootNamespace>Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     

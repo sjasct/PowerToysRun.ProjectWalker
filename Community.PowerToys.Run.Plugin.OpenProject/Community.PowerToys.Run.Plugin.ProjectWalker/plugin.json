@@ -2,13 +2,13 @@
   "ID": "2dbbb8424c3e47edb45ae3253fd67b82",
   "ActionKeyword": "`",
   "IsGlobal": false,
-  "Name": "OpenProject",
+  "Name": "ProjectWalker",
   "Author": "sjasct",
   "Version": "0.87.0",
   "Language": "csharp",
   "Website": "https://github.com/sjasct/powertoys-run-open-project",
-  "ExecuteFileName": "Community.PowerToys.Run.Plugin.OpenProject.dll",
-  "IcoPathDark": "Images\\powertoysrun.openproject.dark.png",
-  "IcoPathLight": "Images\\powertoysrun.openproject.light.png",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.ProjectWalker.dll",
+  "IcoPathDark": "Images\\powertoysrun.projectwalker.dark.png",
+  "IcoPathLight": "Images\\powertoysrun.projectwalker.light.png",
   "DynamicLoading": true
 }

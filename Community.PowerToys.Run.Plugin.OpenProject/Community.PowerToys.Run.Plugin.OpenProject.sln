@@ -2,9 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.PowerToys.Run.Plugin.OpenProject", "Community.PowerToys.Run.Plugin.OpenProject\Community.PowerToys.Run.Plugin.OpenProject.csproj", "{20014C23-E280-4489-8776-C16B26EDAA51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.PowerToys.Run.Plugin.ProjectWalker", "Community.PowerToys.Run.Plugin.ProjectWalker\Community.PowerToys.Run.Plugin.ProjectWalker.csproj", "{20014C23-E280-4489-8776-C16B26EDAA51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.PowerToys.Run.Plugin.OpenProject.UnitTests", "Community.PowerToys.Run.Plugin.OpenProject.UnitTests\Community.PowerToys.Run.Plugin.OpenProject.UnitTests.csproj", "{161573C0-B848-42EB-833E-019E38835A25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.PowerToys.Run.Plugin.ProjectWalker.UnitTests", "Community.PowerToys.Run.Plugin.ProjectWalker.UnitTests\Community.PowerToys.Run.Plugin.ProjectWalker.UnitTests.csproj", "{161573C0-B848-42EB-833E-019E38835A25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

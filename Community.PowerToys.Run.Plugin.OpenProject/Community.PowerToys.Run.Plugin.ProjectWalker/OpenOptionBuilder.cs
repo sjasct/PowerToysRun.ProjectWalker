@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using LibGit2Sharp;
 using Wox.Infrastructure;
 using Wox.Plugin;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
 
 public class OpenOptionBuilder()
 {

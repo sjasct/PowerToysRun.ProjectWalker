@@ -8,7 +8,7 @@ using FuzzySharp;
 using ManagedCommon;
 using Wox.Plugin;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
 {
     /// <summary>
     /// Main class of this plugin that implement all used interfaces.
@@ -23,12 +23,12 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
         /// <summary>
         /// Name of the plugin.
         /// </summary>
-        public string Name => "OpenProject";
+        public string Name => "ProjectWalker";
 
         /// <summary>
         /// Description of the plugin.
         /// </summary>
-        public string Description => "PowerToysRun.OpenProject Description";
+        public string Description => "Quickly search and open projects in specific applications";
 
         private PluginInitContext Context { get; set; }
         

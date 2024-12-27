@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Community.PowerToys.Run.Plugin.OpenProject\Community.PowerToys.Run.Plugin.OpenProject.csproj" />
+        <ProjectReference Include="..\Community.PowerToys.Run.Plugin.ProjectWalker\Community.PowerToys.Run.Plugin.ProjectWalker.csproj" />
     </ItemGroup>
 
 </Project>

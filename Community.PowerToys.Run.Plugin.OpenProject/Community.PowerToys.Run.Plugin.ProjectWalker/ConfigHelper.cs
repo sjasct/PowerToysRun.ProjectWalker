@@ -2,10 +2,10 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text.Json;
-using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using ManagedCommon;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
 
 public class ConfigHelper
 {
@@ -77,8 +77,8 @@ public class ConfigHelper
     public string GetBaseIconPath()
     {
         return _theme == Theme.Light || _theme == Theme.HighContrastWhite
-        ? "Images/powertoysrun.openproject.light.png"
-        : "Images/powertoysrun.openproject.dark.png";
+        ? "Images/powertoysrun.projectwalker.light.png"
+        : "Images/powertoysrun.projectwalker.dark.png";
     }
     
     private static PluginConfig GetDefaultConfiguration()
@@ -105,24 +105,16 @@ public class ConfigHelper
                 },
                 new OpenOption()
                 {
-                    Type = "process",
-                    Name = "Rider",
-                    Index = 2,
-                    ProcessName = "rider",
-                    Parameters = "{{FILE:*.sln}}"
-                },
-                new OpenOption()
-                {
                     Type = "browser",
                     Name = "Open in Browser",
-                    Index = 3,
+                    Index = 2,
                     Parameters = "{{GIT:REMOTE_URL}}"
                 },
                 new OpenOption()
                 {
                     Type = "clipboard",
                     Name = "Copy path",
-                    Index = 4,
+                    Index = 3,
                     Parameters = "{{PATH}}"
                 },
             ]
