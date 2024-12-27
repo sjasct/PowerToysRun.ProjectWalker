@@ -64,8 +64,12 @@ public class ConfigHelper
                 return cacheIconFilePath;
             }
         }
-        catch (ArgumentException){}
-        catch (FileNotFoundException){}
+        catch (ArgumentException)
+        {
+        }
+        catch (FileNotFoundException)
+        {
+        }
         
         return GetBaseIconPath();
     }

@@ -2,15 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject.Models;
-using LibGit2Sharp;
+using FuzzySharp;
 using ManagedCommon;
 using Wox.Plugin;
-using Helper = Wox.Infrastructure.Helper;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
 {
@@ -67,28 +63,34 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.OpenProject
             var search = query.Search;
 
             var topLevels = Directory.GetDirectories(ConfigHelper.Instance.Config.BasePath);
-            var results = new List<Result>();
+            var folders = new List<Folder>();
+            
             foreach (var topLevel in topLevels)
             {
-                var repoDirs = Directory.GetDirectories(topLevel, $"*{search}*");
-                var topDir = new DirectoryInfo(topLevel).Name;
-                results.AddRange(repoDirs.Select(x => new Result()
+                var repoDirs = Directory.GetDirectories(topLevel);
+                foreach (var repoDir in repoDirs)
                 {
-                    QueryTextDisplay = search,
-                    IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
-                    Title = new DirectoryInfo(x).Name,
-                    SubTitle = topDir,
-                    Action = _ =>
-                    {
-                        Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{topDir}\\{new DirectoryInfo(x).Name}\"", true);
-                        return false;
-                    },
-                    ContextData = search,
-                }));
+                    folders.Add(new Folder(new DirectoryInfo(topLevel).Name, new DirectoryInfo(repoDir).Name));
+                }
             }
 
-            return results;
+            var folderResults = folders.Where(x => string.IsNullOrWhiteSpace(query.Search) || Fuzz.PartialRatio($"{x.ProjectFolderName}/{x.RepoFolderName}", search) > 75);
+            return folderResults.Select(x => new Result()
+            {
+                QueryTextDisplay = search,
+                IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
+                Title = x.RepoFolderName,
+                SubTitle = x.ProjectFolderName,
+                Action = _ =>
+                {
+                    Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{x.ProjectFolderName}\\{x.RepoFolderName}\"", true);
+                    return false;
+                },
+                ContextData = search,
+            }).ToList();
         }
+
+        private record Folder(string ProjectFolderName, string RepoFolderName);
 
         private List<Result> GenerateProjectOpenResults(Query query)
         {
