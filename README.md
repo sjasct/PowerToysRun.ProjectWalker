@@ -4,15 +4,22 @@ A plugin for [PowerToys Run](https://github.com/microsoft/powertoys) that lets y
 > [!NOTE]  
 > This was made for my own personal use. It is far from optimised, slightly jankey, and tailored to my specific use case. The project may be expanded in the future, for example with new features in the PowerToys Run API, but this should not be classed as a project with ongoing suopport.
 
-### Install
+## Install
+
+### Manual
+
 1. Stop PowerToys
 2. Download latest .zip from the releases page
 3. Drop the downloaded zip in `%LOCALAPPDATA%\Microsoft\PowerToys\PowerToys Run\Plugins`
 4. Extract the zip, so that the `ProjectWalker` folder is under `Plugins`
 5. Relaunch PowerToys
 
+### [ptr](https://github.com/8LWXpg/ptr)
+```
+ptr add ProjectWalker https://github.com/sjasct/PowerToysRun.ProjectWalker
+```
 
-### Screenshots
+## Screenshots
 
 **Project Results**  
 ![A PowerToys Run result list showing a list of projects](screenshots/project-list.png)
@@ -48,10 +55,10 @@ If a process option does not have a custom icon set, when this option is set to 
 
 `openOptions` - `openOptions[]` *see below*
 
-### Open Options  
+## Open Options  
 These are the set of options you receieve when selecting a project. 
 
-#### Examples
+### Examples
 
 **Open sln file in Rider**
 
@@ -99,7 +106,7 @@ All options support custom icons with the `iconPath` property. This can either b
 
 Options of process type also support trying to extract the icon from the process executable, however this is disabled by default as it's not always reliable and doesn't give high quality icons most of the time. You can enable this by setting the config flag `tryExtractProcessIcons` to `true`. Extracted icons are stored in the cache folder `%APPDATA%/ProjectWalker/icons/cache`, which will need to be cleared if a process has changed it's icon.
 
-#### Libraries Used
+## Libraries Used
 
 - [FuzzySharp](https://github.com/JakeBayer/FuzzySharp)
 - [libgit2sharp](https://github.com/libgit2/libgit2sharp)
