@@ -27,7 +27,7 @@ ptr add ProjectWalker https://github.com/sjasct/PowerToysRun.ProjectWalker
 **Open Options**  
 ![A PowerToys Run result list a list of options for how to open a project](screenshots/option-list.png)
 
-### Configuration
+## Configuration
 On first launch, a config file will be created at `%APPDATA%/ProjectWalker/config.json` with some default options. You can reload and open the config file in Notepad / VS Code by starting your search with `-c`.
 
 `basePath` - `string`  
@@ -55,25 +55,31 @@ If a process option does not have a custom icon set, when this option is set to 
 
 `openOptions` - `openOptions[]` *see below*
 
-## Open Options  
+### Open Options  
 These are the set of options you receieve when selecting a project. 
 
-### Examples
-
-**Open sln file in Rider**
-
+**Examples**  
+*Open folder in VS Code*
+```JSON
+{
+    "type": "process",
+    "name": "Open in Code",
+    "processName": "code",
+    "parameters": "{{FILE:*.sln}}"
+}
+```
+*Open sln file in Rider*
 ```JSON
 {
     "type": "process",
     "name": "Open Solution",
-    "processName": "rider",
+    "processName": "c:\\path\\to\\rider.exe",
     "iconPath": "rider.png",
-    "parameters": "{{FILE:*.sln}}"
+    "parameters": "{{PATH}}"
 }
 ```
 
-**Copy path to clipboard**
-
+*Copy path to clipboard*
 ```JSON
 {
     "type": "clipboard",
@@ -82,8 +88,7 @@ These are the set of options you receieve when selecting a project.
 }
 ```
 
-**Open git remote in browser**
-
+*Open git remote in browser*
 ```JSON
 {
     "type": "browser",
