@@ -48,17 +48,14 @@ public class OpenOptionBuilder()
         {
             result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
         }
-        else
+        else if (ConfigHelper.Instance.Config.TryExtractProcessIcons)
         {
             var extractedIcon = ConfigHelper.Instance.GetProcessIconPath(option.ProcessName);
-            if (!string.IsNullOrWhiteSpace(extractedIcon))
-            {
-                result.IcoPath = extractedIcon;
-            }
-            else
-            {
-                result.IcoPath = ConfigHelper.Instance.GetIconPath("open");
-            }
+            result.IcoPath = !string.IsNullOrWhiteSpace(extractedIcon) ? extractedIcon : ConfigHelper.Instance.GetIconPath("open");
+        }
+        else
+        {
+            result.IcoPath = ConfigHelper.Instance.GetIconPath("open"); 
         }
 
         return result;
