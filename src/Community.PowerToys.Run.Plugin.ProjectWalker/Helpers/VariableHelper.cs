@@ -20,12 +20,6 @@ internal static class VariableHelper
             return null;
         }
 
-        searchText = ReplaceRecursiveFileSearch(searchText, path);
-        if (searchText == null)
-        {
-            return null;
-        }
-        
         searchText = ReplaceGitVars(searchText, path);
         if (searchText == null)
         {
@@ -37,40 +31,28 @@ internal static class VariableHelper
 
     private static string? ReplaceFileSearch(string searchText, string path)
     {
-        var fileExtMatches = Regex.Matches(searchText, "{{FILE:(.+)}}");
+        var fileExtMatches = Regex.Matches(searchText, "{{(FILE|RECURSIVE_FILE):(.+)}}");
         if (!fileExtMatches.Any())
         {
             return searchText;
         }
 
-        var ext = fileExtMatches.First().Groups[1];
-        var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
-
-        if (fileResults.Any())
+        foreach (Match match in fileExtMatches)
         {
-            return searchText.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
-        }
-            
-        return null;
-    }
+            var searchValue = match.Groups[2];
+            var fileResults = new DirectoryInfo(path).GetFiles($"{searchValue.Value}", match.Groups[1].Value == "FILE" ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
 
-    private static string? ReplaceRecursiveFileSearch(string searchText, string path)
-    {
-        var fileExtMatches = Regex.Matches(searchText, "{{RECURSIVE_FILE:(.+)}}");
-        if (!fileExtMatches.Any())
-        {
-            return searchText;
+            if (fileResults.Any())
+            {
+                searchText = searchText.Replace(match.Value, fileResults[0].FullName);
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        var ext = fileExtMatches.First().Groups[1];
-        var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}", SearchOption.AllDirectories);
-
-        if (fileResults.Any())
-        {
-            return searchText.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
-        }
-            
-        return null;
+        return searchText;
     }
 
     private static string? ReplaceGitVars(string searchText, string path)
