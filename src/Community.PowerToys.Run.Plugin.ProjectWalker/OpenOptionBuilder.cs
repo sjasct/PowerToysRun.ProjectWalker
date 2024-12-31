@@ -41,21 +41,21 @@ public class OpenOptionBuilder()
                 return true;
             },
             ContextData = query.Search,
-            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigService.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
 
-        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && IconHelper.TryGetCustomIcon(option.IconPath, out string? customIconPath))
         {
             result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
         }
-        else if (ConfigHelper.Instance.Config.TryExtractProcessIcons)
+        else if (ConfigService.Instance.Config.TryExtractProcessIcons)
         {
-            var extractedIcon = ConfigHelper.Instance.GetProcessIconPath(option.ProcessName);
-            result.IcoPath = !string.IsNullOrWhiteSpace(extractedIcon) ? extractedIcon : ConfigHelper.Instance.GetIconPath("open");
+            var extractedIcon = IconHelper.GetProcessIconPath(option.ProcessName);
+            result.IcoPath = !string.IsNullOrWhiteSpace(extractedIcon) ? extractedIcon : IconHelper.GetIconPath("open");
         }
         else
         {
-            result.IcoPath = ConfigHelper.Instance.GetIconPath("open"); 
+            result.IcoPath = IconHelper.GetIconPath("open"); 
         }
 
         return result;
@@ -91,16 +91,16 @@ public class OpenOptionBuilder()
                 return true;
             },
             ContextData = query.Search,
-            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigService.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
         
-        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && IconHelper.TryGetCustomIcon(option.IconPath, out string? customIconPath))
         {
             result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
         }
         else
         {
-            result.IcoPath = ConfigHelper.Instance.GetIconPath("globe");
+            result.IcoPath = IconHelper.GetIconPath("globe");
         }
 
         return result;
@@ -131,16 +131,16 @@ public class OpenOptionBuilder()
                 return true;
             },
             ContextData = query.Search,
-            Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
+            Score = ConfigService.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
         
-        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && IconHelper.TryGetCustomIcon(option.IconPath, out string? customIconPath))
         {
             result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
         }
         else
         {
-            result.IcoPath = ConfigHelper.Instance.GetIconPath("copy");
+            result.IcoPath = IconHelper.GetIconPath("copy");
         }
 
         return result;
