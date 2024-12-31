@@ -64,8 +64,8 @@ These are the set of options you receieve when selecting a project.
 {
     "type": "process",
     "name": "Open in Code",
-    "processName": "code",
-    "parameters": "{{FILE:*.sln}}"
+    "processName": "code",    
+    "parameters": "{{PATH}}"
 }
 ```
 *Open sln file in Rider*
@@ -75,7 +75,7 @@ These are the set of options you receieve when selecting a project.
     "name": "Open Solution",
     "processName": "c:\\path\\to\\rider.exe",
     "iconPath": "rider.png",
-    "parameters": "{{PATH}}"
+    "parameters": "{{FILE:*.sln}}"
 }
 ```
 
