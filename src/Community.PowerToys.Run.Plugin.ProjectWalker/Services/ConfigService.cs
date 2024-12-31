@@ -3,23 +3,24 @@ using System.IO;
 using System.Text.Json;
 using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using ManagedCommon;
+using Wox.Plugin.Logger;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Services;
 
-public class ConfigService
+internal class ConfigService
 {
-    public static ConfigService Instance { get; } = new ConfigService();
+    internal static ConfigService Instance { get; } = new ConfigService();
 
-    public Theme Theme { get; private set; }
+    internal Theme Theme { get; private set; }
 
-    public PluginConfig Config { get; private set; } = GetDefaultConfiguration();
+    internal PluginConfig Config { get; private set; } = GetDefaultConfiguration();
     
-    public void SetTheme(Theme theme)
+    internal void SetTheme(Theme theme)
     {
         Theme = theme;
     }
 
-    public void LoadConfig()
+    internal void LoadConfig()
     {
         var configFile = GetConfigFilePath();
         if (!File.Exists(configFile))
@@ -33,14 +34,14 @@ public class ConfigService
 
         if (fullConfig == null)
         {
-            Logger.LogError("Failed to deserialize config");
+            Log.Error("Failed to deserialize config", typeof(ConfigService));
             throw new Exception("Failed to load config");
         }
 
         Config = fullConfig;
     }
     
-    public string GetConfigFilePath()
+    internal string GetConfigFilePath()
     {
         return Path.Combine(GetAndCreateBaseSettingsPath(), "config.json");
     }

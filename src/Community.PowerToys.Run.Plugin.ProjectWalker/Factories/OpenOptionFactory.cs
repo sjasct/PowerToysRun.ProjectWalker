@@ -1,18 +1,28 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Helpers;
 using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
-using LibGit2Sharp;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Services;
 using Wox.Infrastructure;
 using Wox.Plugin;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Factories;
 
-public class OpenOptionBuilder()
+internal static class OpenOptionFactory
 {
-    public Result? BuildProcessResult(OpenOption option, Query query, string path)
+    internal static Result? CreateOption(OpenOption option, Query query, string path)
+    {
+        return option.Type switch
+        {
+            "process" => BuildProcessResult(option, query, path),
+            "browser" => BuildBrowserResult(option, query, path),
+            "clipboard" => BuildClipboardResult(option, query, path),
+            _ => null
+        };
+    }
+    
+    private static Result? BuildProcessResult(OpenOption option, Query query, string path)
     {
         if (string.IsNullOrWhiteSpace(option.ProcessName))
         {
@@ -22,8 +32,7 @@ public class OpenOptionBuilder()
         var flags = option.Parameters?.Trim();
         if (!string.IsNullOrWhiteSpace(flags))
         {
-            flags = ReplaceVariables(flags, path);
-
+            flags = VariableHelper.ReplaceVariables(flags, path);
             if (string.IsNullOrWhiteSpace(flags))
             {
                 return null;
@@ -61,7 +70,7 @@ public class OpenOptionBuilder()
         return result;
     }
 
-    public Result? BuildBrowserResult(OpenOption option, Query query, string path)
+    private static Result? BuildBrowserResult(OpenOption option, Query query, string path)
     {
         var destination = option.Parameters?.Trim();
         if (string.IsNullOrWhiteSpace(destination))
@@ -69,7 +78,7 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        destination = ReplaceVariables(destination, path);
+        destination = VariableHelper.ReplaceVariables(destination, path);
         if (string.IsNullOrWhiteSpace(destination))
         {
             return null;
@@ -106,7 +115,7 @@ public class OpenOptionBuilder()
         return result;
     }
 
-    public Result? BuildClipboardResult(OpenOption option, Query query, string path)
+    private static Result? BuildClipboardResult(OpenOption option, Query query, string path)
     {
         var text = option.Parameters?.Trim();
         if (string.IsNullOrWhiteSpace(text))
@@ -114,7 +123,7 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        text = ReplaceVariables(text, path);
+        text = VariableHelper.ReplaceVariables(text, path);
         if (string.IsNullOrWhiteSpace(text))
         {
             return null;
@@ -144,96 +153,5 @@ public class OpenOptionBuilder()
         }
 
         return result;
-    }
-
-    private string? ReplaceVariables(string original, string path)
-    {
-        var searchText = original;
-        searchText = searchText.Replace("{{PATH}}", path);
-        searchText = searchText.Replace("{{FOLDER}}", new DirectoryInfo(path).Name);
-
-        searchText = ReplaceFileSearch(searchText, path);
-        if (searchText == null)
-        {
-            return null;
-        }
-
-        searchText = ReplaceRecursiveFileSearch(searchText, path);
-        if (searchText == null)
-        {
-            return null;
-        }
-        
-        searchText = ReplaceGitVars(searchText, path);
-        if (searchText == null)
-        {
-            return null;
-        }
-
-        return searchText;
-    }
-
-    private string? ReplaceFileSearch(string searchText, string path)
-    {
-        var fileExtMatches = Regex.Matches(searchText, "{{FILE:(.+)}}");
-        if (!fileExtMatches.Any())
-        {
-            return searchText;
-        }
-
-        var ext = fileExtMatches.First().Groups[1];
-        var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}");
-
-        if (fileResults.Any())
-        {
-            return searchText.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
-        }
-            
-        return null;
-    }
-
-    private string? ReplaceRecursiveFileSearch(string searchText, string path)
-    {
-        var fileExtMatches = Regex.Matches(searchText, "{{RECURSIVE_FILE:(.+)}}");
-        if (!fileExtMatches.Any())
-        {
-            return searchText;
-        }
-
-        var ext = fileExtMatches.First().Groups[1];
-        var fileResults = new DirectoryInfo(path).GetFiles($"{ext.Value}", SearchOption.AllDirectories);
-
-        if (fileResults.Any())
-        {
-            return searchText.Replace(fileExtMatches.First().Value, fileResults[0].FullName);
-        }
-            
-        return null;
-    }
-
-    private string? ReplaceGitVars(string searchText, string path)
-    {
-        var gitMatches = Regex.Matches(searchText, "{{GIT:(.+)}}");
-        if (!gitMatches.Any())
-        {
-            return searchText;
-        }
-
-        if (!Repository.IsValid(path))
-        {
-            return null;
-        }
-        
-        using var gitRepo = new Repository(path);
-        foreach (var gitMatch in gitMatches.DistinctBy(x => x.Groups[1].Value))
-        {
-            var gitMatchKey = gitMatch.Groups[1].Value;
-            if (gitMatchKey == "REMOTE_URL" && gitRepo.Network.Remotes.Any())
-            {
-                searchText = searchText.Replace(gitMatch.Value, gitRepo.Network.Remotes.First().Url);
-            }
-        }
-
-        return searchText;
     }
 }

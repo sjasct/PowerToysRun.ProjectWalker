@@ -1,13 +1,15 @@
 using System;
 using System.Drawing;
 using System.IO;
+using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Services;
 using ManagedCommon;
+using Wox.Plugin.Logger;
 
-namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker;
+namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Helpers;
 
-public static class IconHelper
+internal static class IconHelper
 {
-    public static string? GetProcessIconPath(string processName)
+    internal static string? GetProcessIconPath(string processName)
     {
         var fileName = Path.GetFileNameWithoutExtension(processName);
         
@@ -30,17 +32,17 @@ public static class IconHelper
         }
         catch (ArgumentException ex)
         {
-            Logger.LogError($"Ignored ArgumentException: '{ex.Message}'", ex);
+            Log.Exception("Ignored ArgumentException", ex, typeof(IconHelper));
         }
         catch (FileNotFoundException ex)
         {
-            Logger.LogError($"Ignored FileNotFoundException: '{ex.Message}'", ex);
+            Log.Exception("Ignored FileNotFoundException", ex, typeof(IconHelper));
         }
 
         return null;
     }
     
-    public static bool TryGetCustomIcon(string input, out string? path)
+    internal static bool TryGetCustomIcon(string input, out string? path)
     {
         if (Path.IsPathRooted(input) && File.Exists(input))
         {
@@ -64,7 +66,7 @@ public static class IconHelper
         return false;
     }
     
-    public static string GetIconPath(string iconName)
+    internal static string GetIconPath(string iconName)
     {
         return ConfigService.Instance.Theme == Theme.Light || ConfigService.Instance.Theme == Theme.HighContrastWhite
             ? $"Images/{iconName}.light.png"
