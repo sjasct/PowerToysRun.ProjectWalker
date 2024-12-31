@@ -50,9 +50,8 @@ internal static class VariableHelper
                 if (fileResults.Any())
                 {
                     var file = fileResults.First();
-
                     // a yml path has been specified, try get it
-                    if (match.Groups.Count > 3)
+                    if (match.Groups.Values.Count(x => string.IsNullOrWhiteSpace(x.Value)) > 3)
                     {
                         var fileQuery = match.Groups[3].Value.TrimStart('>');
                         if ((file.Extension.ToLower() == ".yml" || file.Extension.ToLower() == ".yaml") && !YamlPathExtensions.GetQueryProblems(fileQuery).Any())
