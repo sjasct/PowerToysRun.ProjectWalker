@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using Windows.UI.Core;
 using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using FuzzySharp;
 using ManagedCommon;
@@ -51,6 +50,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 results.Add(new()
                 {
                     Title = "Please set base path in config.json",
+                    IcoPath = ConfigHelper.Instance.GetIconPath("error"),
                     Score = 9999
                 });
 
@@ -81,6 +81,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 {
                     Title = "Edit Config in Notepad",
                     SubTitle = ConfigHelper.Instance.GetConfigFilePath(),
+                    IcoPath = ConfigHelper.Instance.GetIconPath("open"),
                     Action = _ =>
                     {
                         Helper.OpenInShell("notepad", ConfigHelper.Instance.GetConfigFilePath());
@@ -92,6 +93,8 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 new Result()
                 {
                     Title = "Reload config",
+                    SubTitle = "Reload the configuration file from disk",
+                    IcoPath = ConfigHelper.Instance.GetIconPath("arrow-repeat-all"),
                     Action = _ =>
                     {
                         ConfigHelper.Instance.LoadConfig();
@@ -102,7 +105,21 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 },
                 new Result()
                 {
+                    Title = "Open Icon Folder",
+                    SubTitle = "Store custom icons",
+                    IcoPath = ConfigHelper.Instance.GetIconPath("icons"),
+                    Action = _ =>
+                    {
+                        Helper.OpenInShell("explorer", ConfigHelper.Instance.GetIconFolderPath());
+                        Context.API.ChangeQuery("", true);
+                        return true;
+                    },
+                    Score = 600
+                },
+                new Result()
+                {
                     Title = "View ProjectWalker GitHub repository",
+                    IcoPath = ConfigHelper.Instance.GetIconPath("document-question"),
                     SubTitle = Context.CurrentPluginMetadata.Website,
                     Action = _ =>
                     {
@@ -110,7 +127,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                         Context.API.ChangeQuery("", true);
                         return true;
                     },
-                    Score = 600
+                    Score = 500
                 }
             ];
 
@@ -119,6 +136,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 results.Add(new Result()
                 {
                     Title = "Edit config in custom editor",
+                    IcoPath = ConfigHelper.Instance.GetIconPath("open"),
                     SubTitle = $"{ConfigHelper.Instance.Config.CustomEditorExecutablePath} {ConfigHelper.Instance.GetConfigFilePath()}",
                     Action = _ =>
                     {
@@ -156,6 +174,8 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
             {
                 QueryTextDisplay = search,
                 Title = repoName,
+                SubTitle = Path.Combine(ConfigHelper.Instance.Config.BasePath, repoName),
+                IcoPath = ConfigHelper.Instance.GetIconPath("folder"),
                 Action = _ =>
                 {
                     Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{repoName}\"", true);
@@ -199,6 +219,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 QueryTextDisplay = search,
                 Title = x.RepoFolderName,
                 SubTitle = x.ProjectFolderName,
+                IcoPath = ConfigHelper.Instance.GetIconPath("folder"),
                 Action = _ =>
                 {
                     Context.API.ChangeQuery($"{query.ActionKeyword} -o \"{x.ProjectFolderName}\\{x.RepoFolderName}\"", true);
@@ -219,7 +240,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 [
                     new Result()
                     {
-                        IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
+                        IcoPath = ConfigHelper.Instance.GetIconPath("error"),
                         Title = "Could not find path to folder",
                         SubTitle = path,
                         Action = _ =>
@@ -275,7 +296,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         {
             return new Result()
             {
-                IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
+                IcoPath = ConfigHelper.Instance.GetIconPath("error"),
                 Title = message,
                 SubTitle = subtitle
             };

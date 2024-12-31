@@ -8,7 +8,7 @@
   "Language": "csharp",
   "Website": "https://github.com/sjasct/PowerToysRun.ProjectWalker",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.ProjectWalker.dll",
-  "IcoPathDark": "Images\\powertoysrun.projectwalker.dark.png",
-  "IcoPathLight": "Images\\powertoysrun.projectwalker.light.png",
+  "IcoPathDark": "Images\\folder.dark.png",
+  "IcoPathLight": "Images\\folder.light.png",
   "DynamicLoading": true
 }

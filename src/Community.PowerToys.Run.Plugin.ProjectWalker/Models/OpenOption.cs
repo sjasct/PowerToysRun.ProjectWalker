@@ -7,4 +7,5 @@ public class OpenOption
     public required int Index { get; set; }
     public string? ProcessName { get; set; }
     public string? Parameters { get; set; }
+    public string? IconPath { get; set; }
 }

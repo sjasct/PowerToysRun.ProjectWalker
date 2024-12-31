@@ -41,11 +41,11 @@ public class ConfigHelper
         Config = fullConfig;
     }
     
-    public string GetProcessIconPath(string processName)
+    public string? GetProcessIconPath(string processName)
     {
         var fileName = Path.GetFileNameWithoutExtension(processName);
         
-        var iconCachePath = GetAndCreateBaseSettingsPath("IconCache");
+        var iconCachePath = GetAndCreateBaseSettingsPath(Path.Combine("icons", "cache"));
         var cacheIconFilePath = Path.Combine(iconCachePath, $"{fileName}.png");
         if (File.Exists(cacheIconFilePath))
         {
@@ -68,20 +68,49 @@ public class ConfigHelper
         catch (FileNotFoundException)
         {
         }
-        
-        return GetBaseIconPath();
+
+        return null;
     }
 
-    public string GetBaseIconPath()
+    public bool TryGetCustomIcon(string input, out string? path)
+    {
+        if (Path.IsPathRooted(input) && File.Exists(input))
+        {
+            path = input;
+            return true;
+        }
+
+        if (Path.Exists(Path.Combine(GetIconFolderPath(), input)))
+        {
+            path = Path.Combine(GetIconFolderPath(), input);
+            return true;
+        }
+
+        if (Path.Exists(Path.Combine(GetIconFolderPath(), $"{input}.png")))
+        {
+            path = Path.Combine(GetIconFolderPath(), $"{input}.png");
+            return true;
+        }
+
+        path = null;
+        return false;
+    }
+
+    public string GetIconPath(string iconName)
     {
         return _theme == Theme.Light || _theme == Theme.HighContrastWhite
-        ? "Images/powertoysrun.projectwalker.light.png"
-        : "Images/powertoysrun.projectwalker.dark.png";
+        ? $"Images/{iconName}.light.png"
+        : $"Images/{iconName}.dark.png";
     }
     
     public string GetConfigFilePath()
     {
         return Path.Combine(GetAndCreateBaseSettingsPath(), "config.json");
+    }
+    
+    public string GetIconFolderPath()
+    {
+        return GetAndCreateBaseSettingsPath("icons");
     }
     
     private static PluginConfig GetDefaultConfiguration()

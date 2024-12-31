@@ -30,11 +30,10 @@ public class OpenOptionBuilder()
             }
         }
         
-        return new Result()
+        var result = new Result()
         {
             QueryTextDisplay = query.Search,
             Title = option.Name,
-            IcoPath = ConfigHelper.Instance.GetProcessIconPath(option.ProcessName),
             SubTitle = $"{option.ProcessName} {flags}",
             Action = _ =>
             {
@@ -44,6 +43,25 @@ public class OpenOptionBuilder()
             ContextData = query.Search,
             Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
+
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        {
+            result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
+        }
+        else
+        {
+            var extractedIcon = ConfigHelper.Instance.GetProcessIconPath(option.ProcessName);
+            if (!string.IsNullOrWhiteSpace(extractedIcon))
+            {
+                result.IcoPath = extractedIcon;
+            }
+            else
+            {
+                result.IcoPath = ConfigHelper.Instance.GetIconPath("open");
+            }
+        }
+
+        return result;
     }
 
     public Result? BuildBrowserResult(OpenOption option, Query query, string path)
@@ -65,10 +83,9 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        return new Result()
+        var result = new Result()
         {
             QueryTextDisplay = query.Search,
-            IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
             Title = option.Name,
             SubTitle = destination,
             Action = _ =>
@@ -79,6 +96,17 @@ public class OpenOptionBuilder()
             ContextData = query.Search,
             Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
+        
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        {
+            result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
+        }
+        else
+        {
+            result.IcoPath = ConfigHelper.Instance.GetIconPath("globe");
+        }
+
+        return result;
     }
 
     public Result? BuildClipboardResult(OpenOption option, Query query, string path)
@@ -95,10 +123,9 @@ public class OpenOptionBuilder()
             return null;
         }
         
-        return new Result()
+        var result = new Result()
         {
             QueryTextDisplay = query.Search,
-            IcoPath = ConfigHelper.Instance.GetBaseIconPath(),
             Title = option.Name,
             SubTitle = text,
             Action = _ =>
@@ -109,6 +136,17 @@ public class OpenOptionBuilder()
             ContextData = query.Search,
             Score = ConfigHelper.Instance.Config.Options.Max(x => x.Index) - option.Index
         };
+        
+        if (!string.IsNullOrWhiteSpace(option.IconPath) && ConfigHelper.Instance.TryGetCustomIcon(option.IconPath, out string? customIconPath))
+        {
+            result.IcoPath = customIconPath ?? throw new ArgumentNullException(nameof(customIconPath), "TryGetCustomIcon returned true but outputted null path");
+        }
+        else
+        {
+            result.IcoPath = ConfigHelper.Instance.GetIconPath("copy");
+        }
+
+        return result;
     }
 
     private string? ReplaceVariables(string original, string path)
