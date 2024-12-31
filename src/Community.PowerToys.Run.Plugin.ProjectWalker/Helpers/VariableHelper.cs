@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using LibGit2Sharp;
+using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Helpers;
 
@@ -80,21 +81,29 @@ internal static class VariableHelper
             return searchText;
         }
 
-        if (!Repository.IsValid(path))
+        try
         {
+            if (!Repository.IsValid(path))
+            {
+                return null;
+            }
+            
+            using var gitRepo = new Repository(path);
+            foreach (var gitMatch in gitMatches.DistinctBy(x => x.Groups[1].Value))
+            {
+                var gitMatchKey = gitMatch.Groups[1].Value;
+                if (gitMatchKey == "REMOTE_URL" && gitRepo.Network.Remotes.Any())
+                {
+                    searchText = searchText.Replace(gitMatch.Value, gitRepo.Network.Remotes.First().Url);
+                }
+            }
+        }
+        catch (LibGit2SharpException ex)
+        {
+            Log.Exception("Exception thrown trying to replace Git related variables", ex, typeof(VariableHelper));
             return null;
         }
         
-        using var gitRepo = new Repository(path);
-        foreach (var gitMatch in gitMatches.DistinctBy(x => x.Groups[1].Value))
-        {
-            var gitMatchKey = gitMatch.Groups[1].Value;
-            if (gitMatchKey == "REMOTE_URL" && gitRepo.Network.Remotes.Any())
-            {
-                searchText = searchText.Replace(gitMatch.Value, gitRepo.Network.Remotes.First().Url);
-            }
-        }
-
         return searchText;
     }
 }

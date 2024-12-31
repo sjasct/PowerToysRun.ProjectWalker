@@ -29,8 +29,7 @@ internal class ConfigService
             return;
         }
 
-        var fullConfig =
-            JsonSerializer.Deserialize<PluginConfig>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
+        var fullConfig = JsonSerializer.Deserialize<PluginConfig>(File.ReadAllText(configFile), JsonSerializerOptions.Web);
 
         if (fullConfig == null)
         {

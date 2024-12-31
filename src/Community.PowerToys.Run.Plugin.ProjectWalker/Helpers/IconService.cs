@@ -68,9 +68,7 @@ internal static class IconHelper
     
     internal static string GetIconPath(string iconName)
     {
-        return ConfigService.Instance.Theme == Theme.Light || ConfigService.Instance.Theme == Theme.HighContrastWhite
-            ? $"Images/{iconName}.light.png"
-            : $"Images/{iconName}.dark.png";
+        return ConfigService.Instance.Theme == Theme.Light || ConfigService.Instance.Theme == Theme.HighContrastWhite ? $"Images/{iconName}.light.png" : $"Images/{iconName}.dark.png";
     }
     
     internal static string GetIconFolderPath()

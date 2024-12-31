@@ -83,7 +83,7 @@ public class Main : IPlugin, IContextMenu, IDisposable
         }
         catch (Exception ex)
         {
-            Log.Error($"{ex.GetType().Name} caught by top-level Query method'", GetType());
+            Log.Exception($"{ex.GetType().Name} caught by top-level Query method", ex, GetType());
             return [GetErrorResult("Error generating results")];
         }
     }
