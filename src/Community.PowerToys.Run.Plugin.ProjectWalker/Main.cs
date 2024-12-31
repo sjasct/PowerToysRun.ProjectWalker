@@ -266,21 +266,48 @@ public class Main : IPlugin, IContextMenu, IDisposable
                 }
             ];
         }
-
-        if (!ConfigService.Instance.Config.Options.Any())
-        {
-            return [GetErrorResult("No open options have been set")];
-        }
-            
+        
         var results = new List<Result>();
-        foreach (var option in ConfigService.Instance.Config.Options.OrderBy(x => x.Index))
+
+        if (ConfigService.Instance.Config.Options.Any())
         {
-            var newOption = OpenOptionFactory.CreateOption(option, query, path);
-            if (newOption != null)
+            foreach (var option in ConfigService.Instance.Config.Options.OrderBy(x => x.Index))
             {
-                results.Add(newOption);
+                var newOption = OpenOptionFactory.CreateOption(option, query, path);
+                if (newOption != null)
+                {
+                    results.Add(newOption);
+                }
             }
         }
+        else
+        {
+            results.Add(new Result()
+            {
+                IcoPath = IconHelper.GetIconPath("error"),
+                Title = "No options have been configured",
+                SubTitle = "Click to open configuration menu",
+                Action = _ =>
+                {
+                    Context.API.ChangeQuery($"{query.ActionKeyword} -c", true);
+                    return false;
+                },
+                Score = 99
+            });        
+        }
+        
+        results.Add(new Result()
+        {
+            IcoPath = IconHelper.GetIconPath("arrow-hook-up-left"),
+            Title = "Back",
+            SubTitle = "Go back to repository list",
+            Action = _ =>
+            {
+                Context.API.ChangeQuery($"{query.ActionKeyword}", true);
+                return false;
+            },
+            Score = -9999
+        });
 
         return results;
     }
