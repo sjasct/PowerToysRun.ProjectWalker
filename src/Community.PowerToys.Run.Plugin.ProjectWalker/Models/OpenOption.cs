@@ -8,4 +8,5 @@ public class OpenOption
     public string? ProcessName { get; set; }
     public string? Parameters { get; set; }
     public string? IconPath { get; set; }
+    public string? Key { get; set; }
 }

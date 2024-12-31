@@ -10,5 +10,6 @@ public class PluginConfig
     public int SearchMatchRatio { get; set; } = 70;
     public List<string> IgnoredFolders { get; set; } = []; 
     public List<OpenOption> Options { get; set; } = [];
+    public List<OverrideConfig> Overrides { get; set; } = [];
     public bool TryExtractProcessIcons { get; set; } = false;
 }

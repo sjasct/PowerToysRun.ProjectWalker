@@ -266,12 +266,31 @@ public class Main : IPlugin, IContextMenu, IDisposable
                 }
             ];
         }
+
+        var overrides = new List<OverrideConfig>();
+        var repoName = new DirectoryInfo(path).Name.ToLower();
+        
+        if (ConfigService.Instance.Config.FolderStructureType == FolderStructureType.ProjectParents)
+        {
+            var projectName = new DirectoryInfo(path).Parent?.Name.ToLower();
+            overrides = ConfigService.Instance.Config.Overrides.Where(x => (x.Project?.ToLower() == projectName && x.Repo?.ToLower() == repoName) || (x.Project?.ToLower() == projectName && x.Repo == null)).ToList();
+        }
+        else
+        {
+            overrides = ConfigService.Instance.Config.Overrides.Where(x => x.Repo?.ToLower() == repoName.ToLower() && x.Project == null).ToList();
+        }
+        
+        // combine all options
+        var options = overrides.SelectMany(x => x.Options).ToList();
+        options.AddRange(ConfigService.Instance.Config.Options);
+        
+        // remove any that should be excluded
+        options.RemoveAll(x => overrides.SelectMany(y => y.ExcludeOptions).Contains(x.Key));
         
         var results = new List<Result>();
-
-        if (ConfigService.Instance.Config.Options.Any())
+        if (options.Any())
         {
-            foreach (var option in ConfigService.Instance.Config.Options.OrderBy(x => x.Index))
+            foreach (var option in options.OrderBy(x => x.Index))
             {
                 var newOption = OpenOptionFactory.CreateOption(option, query, path);
                 if (newOption != null)
