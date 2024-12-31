@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Input;
 using Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Models;
 using FuzzySharp;
 using ManagedCommon;
@@ -77,7 +76,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         private List<Result> GenerateConfigManagementResults(Query query)
         {
             List<Result> results = [
-                new Result()
+                new()
                 {
                     Title = "Edit Config in Notepad",
                     SubTitle = ConfigHelper.Instance.GetConfigFilePath(),
@@ -90,7 +89,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                     },
                     Score = 900
                 },
-                new Result()
+                new()
                 {
                     Title = "Reload config",
                     SubTitle = "Reload the configuration file from disk",
@@ -103,7 +102,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                     },
                     Score = 700
                 },
-                new Result()
+                new()
                 {
                     Title = "Open Icon Folder",
                     SubTitle = "Store custom icons",
@@ -116,7 +115,7 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                     },
                     Score = 600
                 },
-                new Result()
+                new()
                 {
                     Title = "View ProjectWalker GitHub repository",
                     IcoPath = ConfigHelper.Instance.GetIconPath("document-question"),
@@ -301,8 +300,6 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
                 SubTitle = subtitle
             };
         }
-        
-        private record Folder(string ProjectFolderName, string RepoFolderName);
 
         /// <summary>
         /// Return a list context menu entries for a given <see cref="Result"/> (shown at the right side of the result).
@@ -311,27 +308,6 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         /// <returns>A list context menu entries.</returns>
         public List<ContextMenuResult> LoadContextMenus(Result selectedResult)
         {
-            if (selectedResult.ContextData is string search)
-            {
-                return
-                [
-                    new ContextMenuResult
-                    {
-                        PluginName = Name,
-                        Title = "Copy to clipboard (Ctrl+C)",
-                        FontFamily = "Segoe MDL2 Assets",
-                        Glyph = "\xE8C8", // Copy
-                        AcceleratorKey = Key.C,
-                        AcceleratorModifiers = ModifierKeys.Control,
-                        Action = _ =>
-                        {
-                            Clipboard.SetDataObject(search);
-                            return true;
-                        },
-                    }
-                ];
-            }
-
             return [];
         }
 
@@ -362,5 +338,6 @@ namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker
         }
         
         private void OnThemeChanged(Theme currentTheme, Theme newTheme) => ConfigHelper.Instance.SetTheme(newTheme);
+        private record Folder(string ProjectFolderName, string RepoFolderName);
     }
 }
