@@ -1,8 +1,11 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using gfs.YamlDotNet.YamlPath;
 using LibGit2Sharp;
 using Wox.Plugin.Logger;
+using YamlDotNet.RepresentationModel;
 
 namespace Community.PowerToys.Run.Plugin.PowerToysRun.ProjectWalker.Helpers;
 
@@ -31,28 +34,67 @@ internal static class VariableHelper
 
     private static string? ReplaceFileSearch(string searchText, string path)
     {
-        var fileExtMatches = Regex.Matches(searchText, "{{(FILE|RECURSIVE_FILE):(.+)}}");
-        if (!fileExtMatches.Any())
+        try
         {
+            var fileExtMatches = Regex.Matches(searchText, "{{(FILE|RECURSIVE_FILE):([^}]+?)(>[^}]*)?}}");
+            if (!fileExtMatches.Any())
+            {
+                return searchText;
+            }
+
+            foreach (Match match in fileExtMatches)
+            {
+                var fileValue = match.Groups[2].Value;
+                var fileResults = new DirectoryInfo(path).GetFiles($"{fileValue}", match.Groups[1].Value == "FILE" ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
+
+                if (fileResults.Any())
+                {
+                    var file = fileResults.First();
+
+                    // a yml path has been specified, try get it
+                    if (match.Groups.Count > 3)
+                    {
+                        var fileQuery = match.Groups[3].Value.TrimStart('>');
+                        if ((file.Extension.ToLower() == ".yml" || file.Extension.ToLower() == ".yaml") && !YamlPathExtensions.GetQueryProblems(fileQuery).Any())
+                        {
+                            using var reader = new StreamReader(file.FullName);
+                            var yml = new YamlStream();
+                            yml.Load(reader);
+
+                            var results = ((YamlMappingNode)yml.Documents[0].RootNode).Query(fileQuery).ToList();
+                            if (results.Any())
+                            {
+                                searchText = searchText.Replace(match.Value, results.First().ToString());
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        searchText = searchText.Replace(match.Value, file.FullName);
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
             return searchText;
         }
-
-        foreach (Match match in fileExtMatches)
+        catch (Exception ex)
         {
-            var searchValue = match.Groups[2];
-            var fileResults = new DirectoryInfo(path).GetFiles($"{searchValue.Value}", match.Groups[1].Value == "FILE" ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
-
-            if (fileResults.Any())
-            {
-                searchText = searchText.Replace(match.Value, fileResults[0].FullName);
-            }
-            else
-            {
-                return null;
-            }
+            Log.Exception($"Exception thrown trying to replace string '{searchText}'", ex, typeof(VariableHelper));
         }
 
-        return searchText;
+        return null;
     }
 
     private static string? ReplaceGitVars(string searchText, string path)

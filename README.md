@@ -104,6 +104,8 @@ These are the set of options you receieve when selecting a project.
 - `{{FILE:x}}` - Find 1st file with a specific filter (replacing `x`) in the top level folder e.g. `{{FILE:*.sln}}` will find the 1st .sln file. 
 - `{{RECURSIVE_FILE:X}}` - Same as `{{FILE:x}}` except all subfolders are searched, instead of just the top-level folder. 
 
+The file search replacement also supports extracting values from YAML files via the [YAML Path spec](https://github.com/wwkimball/yamlpath/wiki/Segments-of-a-YAML-Path) (with exception of collectors). The path must follow the file search query and a `>` character. e.g. `{{FILE:sample.yml>path.to.property}}`.
+
 If a variable is used in an option, but cannot be applied (e.g. not a git repo, no suitable file found) the option will not show.
 
 **Icons**  
@@ -117,3 +119,5 @@ Options of process type also support trying to extract the icon from the process
 - [libgit2sharp](https://github.com/libgit2/libgit2sharp)
 - [Community.PowerToys.Run.Plugin.Dependencies](https://github.com/hlaueriksson/Community.PowerToys.Run.Plugin.Dependencies) (build only)
 - [fluentui-system-icons](https://github.com/microsoft/fluentui-system-icons)
+- [YamlDotNet](https://github.com/aaubry/YamlDotNet)
+- [YamlPathForYamlDotNet](https://github.com/gfs/YamlPathForYamlDotNet)
